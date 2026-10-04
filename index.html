@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'self' data: blob:; connect-src 'none'; img-src 'self' data: blob:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Clock-In Barcode Maker</title>
+<style>
+  :root{
+    --bg:#111418;
+    --panel:#1b2026;
+    --panel2:#232a31;
+    --text:#f2f5f7;
+    --muted:#aeb7c0;
+    --line:#39424c;
+    --accent:#f3cf57;
+    --danger:#ffb4ab;
+    --ok:#a8e6b0;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  main{
+    width:min(920px,100%);
+    margin:0 auto;
+    padding:24px 16px 48px;
+  }
+  h1{font-size:clamp(1.8rem,5vw,2.7rem);margin:.2rem 0 .45rem}
+  .lead{color:var(--muted);margin:0 0 18px;line-height:1.5}
+  .privacy{
+    background:#172219;
+    border:1px solid #33553a;
+    color:#d9f7df;
+    padding:13px 15px;
+    border-radius:12px;
+    margin:0 0 20px;
+    line-height:1.45;
+  }
+  .privacy strong{color:#fff}
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px;
+    margin:14px 0;
+  }
+  .card h2{margin:0 0 6px;font-size:1.18rem}
+  .caption-note{color:var(--muted);font-size:.94rem;margin:0 0 13px}
+  label{display:block;font-weight:700;margin-bottom:7px}
+  .row{display:flex;gap:8px;align-items:stretch}
+  input{
+    width:100%;
+    min-width:0;
+    font:inherit;
+    font-size:1rem;
+    padding:13px 12px;
+    border-radius:10px;
+    border:1px solid #535e69;
+    background:#101419;
+    color:#fff;
+    outline:none;
+  }
+  input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(243,207,87,.18)}
+  button{
+    border:0;
+    border-radius:10px;
+    padding:12px 15px;
+    font:inherit;
+    font-weight:750;
+    cursor:pointer;
+  }
+  button.primary{background:var(--accent);color:#161616}
+  button.secondary{background:#303841;color:#fff;border:1px solid #515d68}
+  button.ghost{background:transparent;color:#fff;border:1px solid #515d68}
+  .eye{width:52px;flex:0 0 52px;padding:0;font-size:1.1rem}
+  .actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:20px 0 8px;
+  }
+  .actions button{flex:1 1 210px}
+  .status{
+    min-height:1.5em;
+    margin:10px 2px 0;
+    color:var(--muted);
+    font-weight:650;
+  }
+  .status.err{color:var(--danger)}
+  .status.ok{color:var(--ok)}
+  .results{display:none;margin-top:22px}
+  .results.show{display:block}
+  .result{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:15px;
+    margin:14px 0;
+  }
+  .result h3{margin:0 0 10px}
+  .preview-wrap{
+    background:#dfe3e7;
+    border-radius:12px;
+    padding:12px;
+    overflow:auto;
+  }
+  canvas{
+    display:block;
+    width:100%;
+    height:auto;
+    background:white;
+    border-radius:4px;
+  }
+  .download{
+    width:100%;
+    margin-top:11px;
+    background:var(--accent);
+    color:#161616;
+  }
+  details{
+    margin-top:24px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:13px 15px;
+  }
+  summary{cursor:pointer;font-weight:800}
+  details p,details li{color:var(--muted);line-height:1.5}
+  .warning{
+    margin-top:20px;
+    padding:14px 15px;
+    border-radius:12px;
+    background:#251d11;
+    border:1px solid #6c5427;
+    color:#f4dfaf;
+    line-height:1.45;
+  }
+  .tiny{font-size:.82rem;color:var(--muted);margin-top:18px;text-align:center}
+  @media(max-width:520px){
+    main{padding:18px 12px 38px}
+    .card{padding:15px}
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Clock-In Barcode Maker</h1>
+  <p class="lead">Create Code 128 barcodes for your username, password, and security answer.</p>
+
+  <div class="privacy">
+    <strong>Private & offline:</strong> this file does not send, upload, save, or transmit anything you type.
+    Barcode images are generated entirely on this device.
+  </div>
+
+  <div class="card">
+    <h2>1. Username</h2>
+    <p class="caption-note">The PNG caption will automatically say <strong>Username</strong>.</p>
+    <label for="username">Username</label>
+    <input id="username" type="text" inputmode="text" autocapitalize="none" autocomplete="off"
+           autocorrect="off" spellcheck="false" placeholder="Enter username exactly">
+  </div>
+
+  <div class="card">
+    <h2>2. Password</h2>
+    <p class="caption-note">The PNG caption will automatically say <strong>Password</strong>. Your actual password will not be printed below the barcode.</p>
+    <label for="password">Password</label>
+    <div class="row">
+      <input id="password" type="password" autocapitalize="none" autocomplete="new-password"
+             autocorrect="off" spellcheck="false" placeholder="Enter password exactly">
+      <button class="secondary eye" type="button" data-toggle="password" aria-label="Show or hide password">👁</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. Security Question</h2>
+    <p class="caption-note">Enter the <strong>answer</strong> you normally type. The PNG caption will say <strong>Security Question</strong>.</p>
+    <label for="security">Security answer</label>
+    <div class="row">
+      <input id="security" type="password" autocapitalize="none" autocomplete="off"
+             autocorrect="off" spellcheck="false" placeholder="Enter security answer exactly">
+      <button class="secondary eye" type="button" data-toggle="security" aria-label="Show or hide security answer">👁</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="generate" class="primary" type="button">Generate Barcodes</button>
+    <button id="clear" class="ghost" type="button">Clear Everything</button>
+  </div>
+  <div id="status" class="status" aria-live="polite"></div>
+
+  <section id="results" class="results">
+    <div class="result">
+      <h3>Username</h3>
+      <div class="preview-wrap"><canvas id="canvas-username"></canvas></div>
+      <button class="download" data-download="username" type="button">Save Username PNG</button>
+    </div>
+
+    <div class="result">
+      <h3>Password</h3>
+      <div class="preview-wrap"><canvas id="canvas-password"></canvas></div>
+      <button class="download" data-download="password" type="button">Save Password PNG</button>
+    </div>
+
+    <div class="result">
+      <h3>Security Question</h3>
+      <div class="preview-wrap"><canvas id="canvas-security"></canvas></div>
+      <button class="download" data-download="security" type="button">Save Security Question PNG</button>
+    </div>
+  </section>
+
+  <div class="warning">
+    <strong>Treat each barcode like the credential it contains.</strong>
+    Anyone who can scan the image can recover/use that value. Keep the images private and do not share them with coworkers.
+  </div>
+
+  <details>
+    <summary>Important tips</summary>
+    <ul>
+      <li>Type each value exactly as you normally enter it. Capital letters and special characters matter.</li>
+      <!--<li>This page warns about spaces at the beginning or end instead of silently removing them.</li>-->
+      <li>The white border around every barcode is intentional. Barcode scanners need a clear “quiet zone.”</li>
+      <!--<li>Before relying on a barcode, scan it into Notepad or another blank text box once and verify every character.</li>
+      <li>Code 128 here supports standard printable ASCII characters, including A–Z, a–z, 0–9, spaces, and common punctuation/symbols.</li>-->
+    </ul>
+  </details>
+
+  <p class="tiny">Self-contained file • No network requests • No external libraries</p>
+</main>
+
+<script>
+"use strict";
+
+/*
+  Code 128 pattern table. Each digit is the width (in modules) of alternating
+  bar/space elements. Entries 0..106 are the standard Code 128 symbol patterns.
+*/
+const CODE128_PATTERNS = [
+"212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212",
+"112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131",
+"311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321",
+"112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121",
+"313121","211331","231131","213113","213311","213131","311123","311321","331121","312113","312311","332111",
+"314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114",
+"122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212",
+"124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113",
+"114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"
+];
+
+const START_B = 104;
+const STOP = 106;
+
+function validatePrintableASCII(value, label) {
+  if (!value.length) return `${label} is empty.`;
+  for (let i = 0; i < value.length; i++) {
+    const c = value.charCodeAt(i);
+    if (c < 32 || c > 126) {
+      return `${label} contains a character this Code 128 generator cannot encode at position ${i + 1}.`;
+    }
+  }
+  return "";
+}
+
+function encodeCode128B(value) {
+  const codes = [START_B];
+  let checksum = START_B;
+
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i) - 32;
+    codes.push(code);
+    checksum += code * (i + 1);
+  }
+
+  codes.push(checksum % 103);
+  codes.push(STOP);
+  return codes;
+}
+
+function patternModules(pattern) {
+  let n = 0;
+  for (const d of pattern) n += Number(d);
+  return n;
+}
+
+function barcodeModuleCount(codes) {
+  return codes.reduce((sum, c) => sum + patternModules(CODE128_PATTERNS[c]), 0);
+}
+
+function drawBarcode(canvas, value, caption) {
+  const codes = encodeCode128B(value);
+
+  // Large quiet zones/margins improve scanning from a phone screen.
+  const modulePx = 4;
+  const quietModules = 16;       // Code 128 minimum is typically 10 modules; use extra.
+  const outerMarginPx = 28;
+  const topMarginPx = 28;
+  const barHeightPx = 390;
+  const captionGapPx = 56;
+  const captionHeightPx = 125;
+  const bottomMarginPx = 34;
+
+  const symbolModules = barcodeModuleCount(codes);
+  const width = (quietModules * 2 + symbolModules) * modulePx + (outerMarginPx * 2);
+  const height = topMarginPx + barHeightPx + captionGapPx + captionHeightPx + bottomMarginPx;
+
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
+
+  let x = outerMarginPx + quietModules * modulePx;
+  const y = topMarginPx;
+
+  ctx.fillStyle = "#000000";
+
+  for (const code of codes) {
+    const pattern = CODE128_PATTERNS[code];
+    let isBar = true;
+    for (const digit of pattern) {
+      const w = Number(digit) * modulePx;
+      if (isBar) {
+        // Integer coordinates keep every edge crisp in the PNG.
+        ctx.fillRect(x, y, w, barHeightPx);
+      }
+      x += w;
+      isBar = !isBar;
+    }
+  }
+
+  // Caption: label only, never the actual credential.
+  const maxFontPx = 88;
+  const minFontPx = 42;
+  let fontPx = maxFontPx;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#000000";
+
+  while (fontPx > minFontPx) {
+    ctx.font = `500 ${fontPx}px Arial, Helvetica, sans-serif`;
+    if (ctx.measureText(caption).width <= width - 120) break;
+    fontPx -= 2;
+  }
+
+  // Slight tracking similar to the supplied Orca image.
+  drawTrackedText(ctx, caption, width / 2, topMarginPx + barHeightPx + captionGapPx + captionHeightPx/2, Math.max(4, fontPx * 0.12));
+}
+
+function drawTrackedText(ctx, text, centerX, y, tracking) {
+  const chars = Array.from(text);
+  const widths = chars.map(ch => ctx.measureText(ch).width);
+  const total = widths.reduce((a,b) => a+b, 0) + tracking * Math.max(0, chars.length - 1);
+  let x = centerX - total / 2;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+  for (let i = 0; i < chars.length; i++) {
+    ctx.fillText(chars[i], x, y);
+    x += widths[i] + tracking;
+  }
+}
+
+function hasOuterWhitespace(value) {
+  return value.length > 0 && (value[0] === " " || value[value.length - 1] === " ");
+}
+
+function generateAll() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const security = document.getElementById("security").value;
+  const status = document.getElementById("status");
+
+  const checks = [
+    validatePrintableASCII(username, "Username"),
+    validatePrintableASCII(password, "Password"),
+    validatePrintableASCII(security, "Security answer")
+  ].filter(Boolean);
+
+  if (checks.length) {
+    status.className = "status err";
+    status.textContent = checks[0];
+    document.getElementById("results").classList.remove("show");
+    return;
+  }
+
+  const whitespaceFields = [];
+  if (hasOuterWhitespace(username)) whitespaceFields.push("Username");
+  if (hasOuterWhitespace(password)) whitespaceFields.push("Password");
+  if (hasOuterWhitespace(security)) whitespaceFields.push("Security answer");
+
+  if (whitespaceFields.length) {
+    const ok = confirm(
+      `${whitespaceFields.join(", ")} ${whitespaceFields.length === 1 ? "has" : "have"} a space at the beginning or end.\n\n` +
+      `That space WILL be encoded into the barcode. Continue only if it is intentional.`
+    );
+    if (!ok) {
+      status.className = "status err";
+      status.textContent = "Generation cancelled so you can remove the accidental space.";
+      return;
+    }
+  }
+
+  drawBarcode(document.getElementById("canvas-username"), username, "Username");
+  drawBarcode(document.getElementById("canvas-password"), password, "Password");
+  drawBarcode(document.getElementById("canvas-security"), security, "Security Question");
+
+  document.getElementById("results").classList.add("show");
+  status.className = "status ok";
+  status.textContent = "Barcodes generated. Save each PNG below.";
+  document.getElementById("results").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function canvasToBlob(canvas) {
+  return new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+}
+
+async function downloadCanvas(kind) {
+  const map = {
+    username: ["canvas-username", "Username.png"],
+    password: ["canvas-password", "Password.png"],
+    security: ["canvas-security", "Security-Question.png"]
+  };
+  const [canvasId, filename] = map[kind];
+  const canvas = document.getElementById(canvasId);
+
+  if (!canvas.width) {
+    alert("Generate the barcodes first.");
+    return;
+  }
+
+  const blob = await canvasToBlob(canvas);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+document.getElementById("generate").addEventListener("click", generateAll);
+
+document.getElementById("clear").addEventListener("click", () => {
+  ["username","password","security"].forEach(id => document.getElementById(id).value = "");
+  ["canvas-username","canvas-password","canvas-security"].forEach(id => {
+    const c = document.getElementById(id);
+    c.width = 0;
+    c.height = 0;
+  });
+  document.getElementById("results").classList.remove("show");
+  const status = document.getElementById("status");
+  status.className = "status";
+  status.textContent = "";
+  document.getElementById("username").focus();
+});
+
+document.querySelectorAll("[data-toggle]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const input = document.getElementById(btn.dataset.toggle);
+    input.type = input.type === "password" ? "text" : "password";
+  });
+});
+
+document.querySelectorAll("[data-download]").forEach(btn => {
+  btn.addEventListener("click", () => downloadCanvas(btn.dataset.download));
+});
+</script>
+</body>
+</html>
