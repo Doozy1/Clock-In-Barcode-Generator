@@ -51,9 +51,20 @@
     margin:14px 0;
   }
 
-.privacy red {
-  color: #f7d9d9;
+.security-warning{
+  background:#2a1214;
+  border:1px solid #8b343b;
+  color:#ffd8dc;
+  padding:13px 15px;
+  border-radius:12px;
+  margin:0 0 12px;
+  line-height:1.45;
 }
+
+.security-warning strong{
+  color:#ffffff;
+}
+
   .card h2{margin:0 0 6px;font-size:1.18rem}
   .caption-note{color:var(--muted);font-size:.94rem;margin:0 0 13px}
   label{display:block;font-weight:700;margin-bottom:7px}
@@ -158,18 +169,16 @@
   <p class="lead">Create barcodes for your SSO user ID, SSO Password, and the answer to your security question.</p>
 
 
-  <div class="privacy red">
-<strong>Anonymous</strong> It is never a good idea to type in any username and/or password on a random website.
-Any website, even this website, for example, could absolutely be saving any information you type. This webpage isn't, but it absolutely could.
-
-This web page is hosted on Github with its source code completely visible to anyone who wants to see it to ensure transparency and honesty.
+  <div class="security-warning">
+<strong>Security Warning:</strong> It is never a good idea to type in any username or password into a website you do not trust.
+  A website could save anything you type into it. Even this page could, but it doesn't.
+  The full source code for this page is publicly available on GitHub so anyone can verify exactly what it does to ensure transparency and honesty.
   </div>
 
   <div class="privacy">
-<strong>Private & Secure:</strong> Everything you enter is processed entirely on this device.
-Your SSO user ID, Password, and the answer to your security question are neither transferred nor saved anywhere by this page in any way.
-All barcode images are created directly by your device using instructions provided by this page. Everything is entirely self-contained.
-If you wanted to, you could save this webpage to your device and use it without any internet connection.
+<strong>Private & Local:</strong> Everything you enter is processed directly on this device.
+Your SSO user ID, Password, and the answer to your security question are not sent anywhere or stored by this page in any way.
+All barcode images are created directly by your device using instructions provided by this page. Everything is self-contained.
   </div>
 
   <div class="card">
@@ -193,11 +202,11 @@ If you wanted to, you could save this webpage to your device and use it without 
 
   <div class="card">
     <h2>3. Security Question Answer</h2>
-    <p class="caption-note">Enter the <strong>answer</strong> to your SSO security question as you would normally type it. The baroce caption will say <strong>Security Question</strong>.</p>
+    <p class="caption-note">Enter the <strong>answer</strong> to your SSO security question as you would normally type it. The barcode caption will say <strong>Security Question</strong>.</p>
     <label for="security">Security Question answer</label>
     <div class="row">
       <input id="security" type="password" autocapitalize="none" autocomplete="off"
-             autocorrect="off" spellcheck="false" placeholder="Enter youur security question answer exactly">
+             autocorrect="off" spellcheck="false" placeholder="Enter your security question answer exactly">
       <button class="secondary eye" type="button" data-toggle="security" aria-label="Show or hide security question answer">👁</button>
     </div>
   </div>
@@ -243,8 +252,9 @@ If you wanted to, you could save this webpage to your device and use it without 
       <li>Code 128 here supports standard printable ASCII characters, including A–Z, a–z, 0–9, spaces, and common punctuation/symbols.</li>
     </ul>
   </details>
--->
+
   <p class="tiny">Self-contained file • No network requests • No external libraries</p>
+-->
 </main>
 
 <script>
@@ -422,7 +432,7 @@ function generateAll() {
 
   drawBarcode(document.getElementById("canvas-username"), username, "Username");
   drawBarcode(document.getElementById("canvas-password"), password, "Password");
-  drawBarcode(document.getElementById("canvas-security"), security, "Security Question");
+  drawBarcode(document.getElementById("canvas-security"), security, "Security Question Answer");
 
   document.getElementById("results").classList.add("show");
   status.className = "status ok";
@@ -438,7 +448,7 @@ async function downloadCanvas(kind) {
   const map = {
     username: ["canvas-username", "Username.png"],
     password: ["canvas-password", "Password.png"],
-    security: ["canvas-security", "Security-Question.png"]
+    security: ["canvas-security", "Security-Question-Answer.png"]
   };
   const [canvasId, filename] = map[kind];
   const canvas = document.getElementById(canvasId);
