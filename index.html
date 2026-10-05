@@ -50,6 +50,10 @@
     padding:18px;
     margin:14px 0;
   }
+
+.privacy red {
+  color: #f7d9d9;
+}
   .card h2{margin:0 0 6px;font-size:1.18rem}
   .caption-note{color:var(--muted);font-size:.94rem;margin:0 0 13px}
   label{display:block;font-weight:700;margin-bottom:7px}
@@ -151,41 +155,50 @@
 <body>
 <main>
   <h1>Clock-In Barcode Maker</h1>
-  <p class="lead">Create Code 128 barcodes for your username, password, and security answer.</p>
+  <p class="lead">Create barcodes for your SSO user ID, SSO Password, and the answer to your security question.</p>
+
+
+  <div class="privacy red">
+<strong>Anonymous</strong> It is never a good idea to type in any username and/or password on a random website.
+Any website, even this website, for example, could absolutely be saving any information you type. This webpage isn't, but it absolutely could.
+
+This web page is hosted on Github with its source code completely visible to anyone who wants to see it to ensure transparency and honesty.
+  </div>
 
   <div class="privacy">
-<strong>Private & local:</strong> Everything you enter is processed entirely on this device.
-Your username, password, and security answer are not uploaded, transmitted, or stored by this page.
-Barcode images are generated locally in your browser.
+<strong>Private & Secure:</strong> Everything you enter is processed entirely on this device.
+Your SSO user ID, Password, and the answer to your security question are neither transferred nor saved anywhere by this page in any way.
+All barcode images are created directly by your device using instructions provided by this page. Everything is entirely self-contained.
+If you wanted to, you could save this webpage to your device and use it without any internet connection.
   </div>
 
   <div class="card">
-    <h2>1. Username</h2>
-    <p class="caption-note">The PNG caption will automatically say <strong>Username</strong>.</p>
-    <label for="username">Username</label>
+    <h2>1. Username (SSO ID)</h2>
+    <p class="caption-note">The barcode caption will automatically say <strong>Username</strong>.</p>
+    <label for="username">Username (SSO ID)</label>
     <input id="username" type="text" inputmode="text" autocapitalize="none" autocomplete="off"
-           autocorrect="off" spellcheck="false" placeholder="Enter username exactly">
+           autocorrect="off" spellcheck="false" placeholder="Enter username (SSO ID) exactly">
   </div>
 
   <div class="card">
-    <h2>2. Password</h2>
-    <p class="caption-note">The PNG caption will automatically say <strong>Password</strong>. Your actual password will not be printed below the barcode.</p>
-    <label for="password">Password</label>
+    <h2>2. SSO Password</h2>
+    <p class="caption-note">The barcode caption will automatically say <strong>Password</strong>. Your actual SSO password will not be shown below the barcode.</p>
+    <label for="password">SSO Password</label>
     <div class="row">
       <input id="password" type="password" autocapitalize="none" autocomplete="new-password"
-             autocorrect="off" spellcheck="false" placeholder="Enter password exactly">
+             autocorrect="off" spellcheck="false" placeholder="Enter SSO password exactly">
       <button class="secondary eye" type="button" data-toggle="password" aria-label="Show or hide password">👁</button>
     </div>
   </div>
 
   <div class="card">
-    <h2>3. Security Question</h2>
-    <p class="caption-note">Enter the <strong>answer</strong> you normally type. The PNG caption will say <strong>Security Question</strong>.</p>
-    <label for="security">Security answer</label>
+    <h2>3. Security Question Answer</h2>
+    <p class="caption-note">Enter the <strong>answer</strong> to your SSO security question as you would normally type it. The baroce caption will say <strong>Security Question</strong>.</p>
+    <label for="security">Security Question answer</label>
     <div class="row">
       <input id="security" type="password" autocapitalize="none" autocomplete="off"
-             autocorrect="off" spellcheck="false" placeholder="Enter security answer exactly">
-      <button class="secondary eye" type="button" data-toggle="security" aria-label="Show or hide security answer">👁</button>
+             autocorrect="off" spellcheck="false" placeholder="Enter youur security question answer exactly">
+      <button class="secondary eye" type="button" data-toggle="security" aria-label="Show or hide security question answer">👁</button>
     </div>
   </div>
 
@@ -197,40 +210,40 @@ Barcode images are generated locally in your browser.
 
   <section id="results" class="results">
     <div class="result">
-      <h3>Username</h3>
+      <h3>Username (SSO ID)</h3>
       <div class="preview-wrap"><canvas id="canvas-username"></canvas></div>
-      <button class="download" data-download="username" type="button">Save Username PNG</button>
+      <button class="download" data-download="username" type="button">Save Username Barcode</button>
     </div>
 
     <div class="result">
       <h3>Password</h3>
       <div class="preview-wrap"><canvas id="canvas-password"></canvas></div>
-      <button class="download" data-download="password" type="button">Save Password PNG</button>
+      <button class="download" data-download="password" type="button">Save Password Barcode</button>
     </div>
 
     <div class="result">
-      <h3>Security Question</h3>
+      <h3>Security Question Answer</h3>
       <div class="preview-wrap"><canvas id="canvas-security"></canvas></div>
-      <button class="download" data-download="security" type="button">Save Security Question PNG</button>
+      <button class="download" data-download="security" type="button">Save Security Question Barcode</button>
     </div>
   </section>
 
   <div class="warning">
     <strong>Treat each barcode like the credential it contains.</strong>
-    Anyone who can scan the image can recover/use that value. Keep the images private.
+    Anyone who can scan the image can see and use that value. Keep the images private.
   </div>
-
+<!--
   <details>
     <summary>Important tips</summary>
     <ul>
       <li>Type each value exactly as you normally enter it. Capital letters and special characters matter.</li>
-      <!--<li>This page warns about spaces at the beginning or end instead of silently removing them.</li>-->
+      <li>This page warns about spaces at the beginning or end instead of silently removing them.</li>
       <li>The white border around every barcode is intentional. Barcode scanners need a clear “quiet zone.”</li>
-      <!--<li>Before relying on a barcode, scan it into Notepad or another blank text box once and verify every character.</li>
-      <li>Code 128 here supports standard printable ASCII characters, including A–Z, a–z, 0–9, spaces, and common punctuation/symbols.</li>-->
+      <li>Before relying on a barcode, scan it into Notepad or another blank text box once and verify every character.</li>
+      <li>Code 128 here supports standard printable ASCII characters, including A–Z, a–z, 0–9, spaces, and common punctuation/symbols.</li>
     </ul>
   </details>
-
+-->
   <p class="tiny">Self-contained file • No network requests • No external libraries</p>
 </main>
 
