@@ -202,8 +202,8 @@ All barcode images are created directly by your device using instructions provid
 
   <div class="card">
     <h2>3. Security Question Answer</h2>
-    <p class="caption-note">Enter the <strong>answer</strong> to your SSO security question as you would normally type it. The barcode caption will say <strong>Security Question Answer</strong>.</p>
-    <label for="security">Security Question answer</label>
+    <p class="caption-note">Enter the <strong>answer</strong> to your SSO security question as you would normally type it. The barcode caption will say <strong>Security Question</strong>.</p>
+    <label for="security">Security Question Answer</label>
     <div class="row">
       <input id="security" type="password" autocapitalize="none" autocomplete="off"
              autocorrect="off" spellcheck="false" placeholder="Enter your security question answer exactly">
@@ -233,7 +233,7 @@ All barcode images are created directly by your device using instructions provid
     <div class="result">
       <h3>Security Question Answer</h3>
       <div class="preview-wrap"><canvas id="canvas-security"></canvas></div>
-      <button class="download" data-download="security" type="button">Save Security Question Barcode</button>
+      <button class="download" data-download="security" type="button">Save Security Question Answer Barcode</button>
     </div>
   </section>
 
@@ -432,7 +432,7 @@ function generateAll() {
 
   drawBarcode(document.getElementById("canvas-username"), username, "Username");
   drawBarcode(document.getElementById("canvas-password"), password, "Password");
-  drawBarcode(document.getElementById("canvas-security"), security, "Security Question Answer");
+  drawBarcode(document.getElementById("canvas-security"), security, "Security Question");
 
   document.getElementById("results").classList.add("show");
   status.className = "status ok";
